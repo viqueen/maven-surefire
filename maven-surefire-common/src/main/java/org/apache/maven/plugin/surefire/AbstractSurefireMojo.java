@@ -1057,7 +1057,7 @@ public abstract class AbstractSurefireMojo
                                                              getUserProperties(), sysProps );
 
         result.setProperty( "basedir", getBasedir().getAbsolutePath() );
-        result.setProperty( "user.dir", getWorkingDirectory().getAbsolutePath() );
+//        result.setProperty( "user.dir", getWorkingDirectory().getAbsolutePath() );
         result.setProperty( "localRepository", getLocalRepository().getBasedir() );
         if ( isForking() )
         {
