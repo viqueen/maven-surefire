@@ -25,6 +25,7 @@ import org.apache.maven.surefire.report.TestSetReportEntry;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Collections.unmodifiableMap;
 import static org.apache.maven.plugin.surefire.report.ReporterUtils.formatElapsedTime;
@@ -103,14 +104,26 @@ public class WrappedReportEntry
     }
 
     @Override
+    public String getSourceText()
+    {
+        return original.getSourceText();
+    }
+
+    @Override
     public String getName()
     {
         return original.getName();
     }
 
+    @Override
+    public String getNameText()
+    {
+        return original.getNameText();
+    }
+
     public String getClassMethodName()
     {
-        return getSourceName() + "." + getName();
+        return original.getSourceName() + "." + original.getName();
     }
 
     @Override
@@ -142,14 +155,23 @@ public class WrappedReportEntry
         return formatElapsedTime( getElapsed() );
     }
 
-    public String getReportName()
+    String getReportSourceName()
     {
-        return getSourceName();
+        String sourceName = getSourceName();
+        String sourceText = getSourceText();
+        return isBlank( sourceText ) || Objects.equals( sourceName, sourceText ) ? sourceName : sourceText;
     }
 
-    public String getReportName( String suffix )
+    String getReportSourceName( String suffix )
     {
-        return isBlank( suffix ) ? getReportName() : getReportName() + "(" + suffix + ")";
+        return isBlank( suffix ) ? getReportSourceName() : getReportSourceName() + "(" + suffix + ")";
+    }
+
+    String getReportName()
+    {
+        String name = getName();
+        String nameText = getNameText();
+        return isBlank( nameText ) || Objects.equals( name, nameText ) ? name : nameText;
     }
 
     public String getOutput( boolean trimStackTrace )

@@ -19,25 +19,27 @@ package junitplatformenginejupiter;
  * under the License.
  */
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-// TODO Uncomment after SUREFIRE-1222 is done
-// @DisplayName("<< ✨ >>")
+@DisplayName( "<< ✨ >>" )
 class DisplayNameTest
 {
     @Test
-    @DisplayName("73$71 ✔")
+    @DisplayName( "73$71 ✔" )
     void test1()
+            throws Exception
     {
+        System.out.println( getClass().getDeclaredMethod( "test1" ).getAnnotation( DisplayName.class ).value() );
+        System.out.println( getClass().getAnnotation( DisplayName.class ).value() );
     }
 
     @Test
-    @DisplayName("73$71 ✔")
+    @DisplayName( "73$72 ✔" )
     void test2()
+            throws Exception
     {
+        System.out.println( getClass().getDeclaredMethod( "test2" ).getAnnotation( DisplayName.class ).value() );
+        System.out.println( getClass().getAnnotation( DisplayName.class ).value() );
     }
 }

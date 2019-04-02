@@ -74,7 +74,7 @@ public class FileReporter
             writer.write( "-------------------------------------------------------------------------------" );
             writer.newLine();
 
-            writer.write( "Test set: " + report.getSourceName() );
+            writer.write( "Test set: " + report.getReportSourceName() );
             writer.newLine();
 
             writer.write( "-------------------------------------------------------------------------------" );

@@ -354,14 +354,14 @@ public class StatelessXmlReporter
     private void startTestElement( XMLWriter ppw, WrappedReportEntry report )
     {
         ppw.startElement( "testcase" );
-        ppw.addAttribute( "name", report.getName() == null ? "" : extraEscape( report.getName(), true ) );
+        ppw.addAttribute( "name", report.getReportName() == null ? "" : extraEscape( report.getReportName(), true ) );
 
         if ( report.getGroup() != null )
         {
             ppw.addAttribute( "group", report.getGroup() );
         }
 
-        String className = report.getReportName( reportNameSuffix );
+        String className = report.getReportSourceName( reportNameSuffix );
         if ( className != null )
         {
             ppw.addAttribute( "classname", extraEscape( className, true ) );
@@ -378,7 +378,7 @@ public class StatelessXmlReporter
         ppw.addAttribute( "xsi:noNamespaceSchemaLocation", xsdSchemaLocation );
         ppw.addAttribute( "version", "3.0" );
 
-        String reportName = report.getReportName( reportNameSuffix );
+        String reportName = report.getReportSourceName( reportNameSuffix );
         ppw.addAttribute( "name", reportName == null ? "" : extraEscape( reportName, true ) );
 
         if ( report.getGroup() != null )

@@ -357,6 +357,12 @@
         <artifactId>powermock-api-mockito2</artifactId>
         <version>${powermockVersion}</version>
       </dependency>
+      <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-reflect</artifactId>
+        <version>${powermockVersion}</version>
+        <scope>compile</scope>
+      </dependency>
       <!-- END: PowerMock@Java9 -->
       <dependency>
         <groupId>junit</groupId>
@@ -464,6 +470,7 @@
             <compilerArgs>
               <arg>-Xdoclint:all</arg>
             </compilerArgs>
+            <encoding>UTF-8</encoding>
           </configuration>
         </plugin>
         <!-- NOTE: animal sniffer does not check test classes: https://jira.codehaus.org/browse/MANIMALSNIFFER-40 -->
