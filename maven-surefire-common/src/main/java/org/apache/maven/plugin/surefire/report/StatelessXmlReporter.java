@@ -20,8 +20,10 @@ package org.apache.maven.plugin.surefire.report;
  */
 
 import org.apache.maven.plugin.surefire.booterclient.output.InPluginProcessDumpSingleton;
+import org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent;
 import org.apache.maven.shared.utils.xml.PrettyPrintXMLWriter;
 import org.apache.maven.shared.utils.xml.XMLWriter;
+import org.apache.maven.surefire.extensions.StatelessReportEventListener;
 import org.apache.maven.surefire.report.ReportEntry;
 import org.apache.maven.surefire.report.ReporterException;
 import org.apache.maven.surefire.report.SafeThrowable;
@@ -83,7 +85,7 @@ import static org.apache.maven.surefire.util.internal.StringUtils.isBlank;
  *      (not yet implemented by Ant 1.8.2)
  */
 @Deprecated // this is no more stateless due to existence of testClassMethodRunHistoryMap since of 2.19. Rename to StatefulXmlReporter in 3.0.
-public class StatelessXmlReporter
+public class StatelessXmlReporter implements StatelessReportEventListener<StatelessReporterEvent>
 {
     private final File reportsDirectory;
 
@@ -110,6 +112,12 @@ public class StatelessXmlReporter
         this.rerunFailingTestsCount = rerunFailingTestsCount;
         this.testClassMethodRunHistoryMap = testClassMethodRunHistoryMap;
         this.xsdSchemaLocation = xsdSchemaLocation;
+    }
+
+    @Override
+    public void testSetCompleted( StatelessReporterEvent event )
+    {
+        testSetCompleted( event.getTestSetReportEntry(), event.getTestSetStats() );
     }
 
     public void testSetCompleted( WrappedReportEntry testSetReportEntry, TestSetStats testSetStats )
