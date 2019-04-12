@@ -22,6 +22,8 @@ package org.apache.maven.surefire.extensions;
 import java.util.EventObject;
 
 /**
+ * Extension for stateless reporter.
+ *
  * @author <a href="mailto:tibordigana@apache.org">Tibor Digana (tibor17)</a>
  * @since 3.0.0-M4
  * @param <T> Generic type of event type
@@ -30,6 +32,16 @@ import java.util.EventObject;
 public abstract class StatelessReporter<T extends EventObject, C extends StatelessReportMojoConfiguration>
 {
     private boolean disableXmlReport;
+    private SourceNameType useFileName;
+    private SourceNameType useTestCaseClassName;
+    private SourceNameType useTestCaseMethodName;
+
+    /**
+     * Creates reporter.
+     *
+     * @return reporter object
+     */
+    public abstract StatelessReportEventListener<T> createStatelessReportEventListener( C configuration );
 
     public boolean isDisableXmlReport()
     {
@@ -41,16 +53,44 @@ public abstract class StatelessReporter<T extends EventObject, C extends Statele
         this.disableXmlReport = disableXmlReport;
     }
 
-    /**
-     * Creates reporter.
-     *
-     * @return reporter object
-     */
-    public abstract StatelessReportEventListener<T> createStatelessReportEventListener( C configuration );
+    public SourceNameType getUseFileName()
+    {
+        return useFileName;
+    }
+
+    public void setUseFileName( SourceNameType useFileName )
+    {
+        this.useFileName = useFileName;
+    }
+
+    public SourceNameType getUseTestCaseClassName()
+    {
+        return useTestCaseClassName;
+    }
+
+    public void setUseTestCaseClassName( SourceNameType useTestCaseClassName )
+    {
+        this.useTestCaseClassName = useTestCaseClassName;
+    }
+
+    public SourceNameType getUseTestCaseMethodName()
+    {
+        return useTestCaseMethodName;
+    }
+
+    public void setUseTestCaseMethodName( SourceNameType useTestCaseMethodName )
+    {
+        this.useTestCaseMethodName = useTestCaseMethodName;
+    }
 
     @Override
     public String toString()
     {
-        return "StatelessReporter{" + "disableXmlReport=" + disableXmlReport + '}';
+        return "StatelessReporter{"
+                + "disableXmlReport=" + disableXmlReport
+                + ", useFileName=" + useFileName
+                + ", useTestCaseClassName=" + useTestCaseClassName
+                + ", useTestCaseMethodName=" + useTestCaseMethodName
+                + '}';
     }
 }
