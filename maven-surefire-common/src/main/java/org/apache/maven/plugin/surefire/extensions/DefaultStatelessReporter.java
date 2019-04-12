@@ -21,17 +21,18 @@ package org.apache.maven.plugin.surefire.extensions;
 
 import org.apache.maven.surefire.extensions.StatelessReportEventListener;
 import org.apache.maven.surefire.extensions.StatelessReporter;
-// import org.codehaus.plexus.component.annotations.Component;
 
 /**
  * author <a href="mailto:tibordigana@apache.org">Tibor Digana (tibor17)</a>
  * @since 3.0.0-M4
  */
-// @Component( role = StatelessReporter.class, hint = "default" )
-public class DefaultStatelessReporter extends StatelessReporter<StatelessReporterEvent>
+public class DefaultStatelessReporter
+        extends StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration>
 {
+
     @Override
-    public StatelessReportEventListener<StatelessReporterEvent> createStatelessReportEventListener()
+    public StatelessReportEventListener<StatelessReporterEvent> createStatelessReportEventListener(
+            DefaultStatelessReportMojoConfiguration configuration )
     {
         return null;
     }

@@ -19,32 +19,17 @@ package org.apache.maven.surefire.extensions;
  * under the License.
  */
 
-// import org.codehaus.plexus.component.annotations.Configuration;
-
-import java.io.File;
 import java.util.EventObject;
 
 /**
  * @author <a href="mailto:tibordigana@apache.org">Tibor Digana (tibor17)</a>
  * @since 3.0.0-M4
  * @param <T> Generic type of event type
+ * @param <C> mojo config
  */
-public abstract class StatelessReporter<T extends EventObject>
+public abstract class StatelessReporter<T extends EventObject, C extends StatelessReportMojoConfiguration>
 {
-    public static final String ROLE = StatelessReporter.class.getName();
-
-    // @Configuration( "false" )
     private boolean disableXmlReport;
-
-    private File reportsDirectory;
-    private boolean trimStackTrace;
-
-    /**
-     * Creates reporter.
-     *
-     * @return reporter object
-     */
-    public abstract StatelessReportEventListener<T> createStatelessReportEventListener();
 
     public boolean isDisableXmlReport()
     {
@@ -56,23 +41,16 @@ public abstract class StatelessReporter<T extends EventObject>
         this.disableXmlReport = disableXmlReport;
     }
 
-    public File getReportsDirectory()
-    {
-        return reportsDirectory;
-    }
+    /**
+     * Creates reporter.
+     *
+     * @return reporter object
+     */
+    public abstract StatelessReportEventListener<T> createStatelessReportEventListener( C configuration );
 
-    public void setReportsDirectory( File reportsDirectory )
+    @Override
+    public String toString()
     {
-        this.reportsDirectory = reportsDirectory;
-    }
-
-    public boolean isTrimStackTrace()
-    {
-        return trimStackTrace;
-    }
-
-    public void setTrimStackTrace( boolean trimStackTrace )
-    {
-        this.trimStackTrace = trimStackTrace;
+        return "StatelessReporter{" + "disableXmlReport=" + disableXmlReport + '}';
     }
 }

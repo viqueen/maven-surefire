@@ -25,7 +25,7 @@ import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.surefire.extensions.Shader;
+import org.apache.maven.plugin.surefire.extensions.DefaultStatelessReporter;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
@@ -70,7 +70,6 @@ import org.apache.maven.surefire.booter.StartupConfiguration;
 import org.apache.maven.surefire.booter.SurefireBooterForkException;
 import org.apache.maven.surefire.booter.SurefireExecutionException;
 import org.apache.maven.surefire.cli.CommandLineOption;
-import org.apache.maven.surefire.extensions.StatelessReporter;
 import org.apache.maven.surefire.providerapi.SurefireProvider;
 import org.apache.maven.surefire.report.ReporterConfiguration;
 import org.apache.maven.surefire.suite.RunResult;
@@ -158,11 +157,8 @@ public abstract class AbstractSurefireMojo
 
     private final ProviderDetector providerDetector = new ProviderDetector();
 
-    // @Component( hint = "default", role = StatelessReporter.class )
-    private StatelessReporter statelessReporter;
-
-    @Component( hint = "default", role = Shader.class )
-    private Shader shader;
+    @Parameter
+    private DefaultStatelessReporter statelessReporter;
 
     /**
      * Information about this plugin, mainly used to lookup this plugin's configuration from the currently executing

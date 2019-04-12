@@ -29,7 +29,7 @@ import java.util.EventObject;
  *
  * author <a href="mailto:tibordigana@apache.org">Tibor Digana (tibor17)</a>
  * @since 3.0.0-M4
- * @param <T> Generic type of event type
+ * @param <T> Generic type of event type (see org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent)
  */
 public interface StatelessReportEventListener<T extends EventObject>
         extends EventListener
@@ -40,7 +40,7 @@ public interface StatelessReportEventListener<T extends EventObject>
      * The {@code event} (of type <em>org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent</em>)
      * wraps <em>WrappedReportEntry</em> and <em>TestSetStats</em> from the module <em>maven-surefire-common</em>.
      * <br>
-     * The {@link EventObject#getSource()} may access <em>TestSetRunListener</em> object or returns <tt>null</tt>.
+     * The {@link EventObject#getSource()} may access <em>TestSetRunListener</em> object.
      *
      * @param event event wrapper (type can be changed between major or minor versions)
      */
