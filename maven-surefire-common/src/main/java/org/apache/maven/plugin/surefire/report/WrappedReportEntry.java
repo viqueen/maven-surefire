@@ -167,6 +167,11 @@ public class WrappedReportEntry
         return isBlank( suffix ) ? getReportSourceName() : getReportSourceName() + "(" + suffix + ")";
     }
 
+    String getSourceName( String suffix )
+    {
+        return isBlank( suffix ) ? getSourceName() : getSourceName() + "(" + suffix + ")";
+    }
+
     String getReportName()
     {
         String name = getName();

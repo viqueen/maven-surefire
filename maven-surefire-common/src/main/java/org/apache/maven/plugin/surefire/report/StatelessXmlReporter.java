@@ -23,8 +23,8 @@ import org.apache.maven.plugin.surefire.booterclient.output.InPluginProcessDumpS
 import org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent;
 import org.apache.maven.shared.utils.xml.PrettyPrintXMLWriter;
 import org.apache.maven.shared.utils.xml.XMLWriter;
+import org.apache.maven.surefire.extensions.SourceNameType;
 import org.apache.maven.surefire.extensions.StatelessReportEventListener;
-import org.apache.maven.surefire.report.ReportEntry;
 import org.apache.maven.surefire.report.ReporterException;
 import org.apache.maven.surefire.report.SafeThrowable;
 
@@ -48,6 +48,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.maven.plugin.surefire.report.DefaultReporterFactory.TestResultType;
 import static org.apache.maven.plugin.surefire.report.FileReporterUtils.stripIllegalFilenameChars;
 import static org.apache.maven.plugin.surefire.report.ReportEntryType.SUCCESS;
+import static org.apache.maven.surefire.extensions.SourceNameType.DEFAULT;
 import static org.apache.maven.surefire.util.internal.StringUtils.isBlank;
 
 @SuppressWarnings( { "javadoc", "checkstyle:javadoctype" } )
@@ -101,10 +102,17 @@ public class StatelessXmlReporter implements StatelessReportEventListener<Statel
     // and the list of runs for each test method
     private final Map<String, Deque<WrappedReportEntry>> testClassMethodRunHistoryMap;
 
+    private final SourceNameType fileName;
+
+    private final SourceNameType className;
+
+    private final SourceNameType methodName;
+
     public StatelessXmlReporter( File reportsDirectory, String reportNameSuffix, boolean trimStackTrace,
                                  int rerunFailingTestsCount,
                                  Map<String, Deque<WrappedReportEntry>> testClassMethodRunHistoryMap,
-                                 String xsdSchemaLocation )
+                                 String xsdSchemaLocation,
+                                 SourceNameType fileName, SourceNameType className, SourceNameType methodName )
     {
         this.reportsDirectory = reportsDirectory;
         this.reportNameSuffix = reportNameSuffix;
@@ -112,6 +120,9 @@ public class StatelessXmlReporter implements StatelessReportEventListener<Statel
         this.rerunFailingTestsCount = rerunFailingTestsCount;
         this.testClassMethodRunHistoryMap = testClassMethodRunHistoryMap;
         this.xsdSchemaLocation = xsdSchemaLocation;
+        this.fileName = fileName;
+        this.className = className;
+        this.methodName = methodName;
     }
 
     @Override
@@ -352,9 +363,9 @@ public class StatelessXmlReporter implements StatelessReportEventListener<Statel
         return new OutputStreamWriter( fos, UTF_8 );
     }
 
-    private File getReportFile( ReportEntry report )
+    private File getReportFile( WrappedReportEntry report )
     {
-        String reportName = "TEST-" + report.getSourceName();
+        String reportName = "TEST-" + ( fileName == DEFAULT ? report.getSourceName() : report.getReportSourceName() );
         String customizedReportName = isBlank( reportNameSuffix ) ? reportName : reportName + "-" + reportNameSuffix;
         return new File( reportsDirectory, stripIllegalFilenameChars( customizedReportName + ".xml" ) );
     }
@@ -362,14 +373,17 @@ public class StatelessXmlReporter implements StatelessReportEventListener<Statel
     private void startTestElement( XMLWriter ppw, WrappedReportEntry report )
     {
         ppw.startElement( "testcase" );
-        ppw.addAttribute( "name", report.getReportName() == null ? "" : extraEscape( report.getReportName(), true ) );
+        String name = methodName == DEFAULT ? report.getName() : report.getReportName();
+        ppw.addAttribute( "name", name == null ? "" : extraEscape( name, true ) );
 
         if ( report.getGroup() != null )
         {
             ppw.addAttribute( "group", report.getGroup() );
         }
 
-        String className = report.getReportSourceName( reportNameSuffix );
+        String className = this.className == DEFAULT
+                ? report.getSourceName( reportNameSuffix )
+                : report.getReportSourceName( reportNameSuffix );
         if ( className != null )
         {
             ppw.addAttribute( "classname", extraEscape( className, true ) );
@@ -386,7 +400,9 @@ public class StatelessXmlReporter implements StatelessReportEventListener<Statel
         ppw.addAttribute( "xsi:noNamespaceSchemaLocation", xsdSchemaLocation );
         ppw.addAttribute( "version", "3.0" );
 
-        String reportName = report.getReportSourceName( reportNameSuffix );
+        String reportName = this.className == DEFAULT
+                ? report.getSourceName( reportNameSuffix )
+                : report.getReportSourceName( reportNameSuffix );
         ppw.addAttribute( "name", reportName == null ? "" : extraEscape( reportName, true ) );
 
         if ( report.getGroup() != null )

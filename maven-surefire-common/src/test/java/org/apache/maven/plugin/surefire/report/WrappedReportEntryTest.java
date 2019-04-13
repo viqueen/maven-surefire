@@ -50,7 +50,10 @@ public class WrappedReportEntryTest
         WrappedReportEntry wr = new WrappedReportEntry( reportEntry, null, 12, null, null );
         assertEquals( "surefire.testcase.JunitParamsTest.testSum", wr.getClassMethodName() );
         assertEquals( "surefire.testcase.JunitParamsTest", wr.getReportSourceName() );
+        assertEquals( "surefire.testcase.JunitParamsTest", wr.getReportSourceName( "" ) );
         assertEquals( "surefire.testcase.JunitParamsTest(BDD)", wr.getReportSourceName( "BDD" ) );
+        assertEquals( "surefire.testcase.JunitParamsTest", wr.getSourceName( "" ) );
+        assertEquals( "surefire.testcase.JunitParamsTest(BDD)", wr.getSourceName( "BDD" ) );
         assertEquals( "testSum", wr.getReportName() );
         assertFalse(wr.isSucceeded());
         assertFalse( wr.isErrorOrFailure() );
@@ -68,6 +71,7 @@ public class WrappedReportEntryTest
         assertEquals( "surefire.testcase.JunitParamsTest.testSum", wr.getClassMethodName() );
         assertEquals( "dn1", wr.getReportSourceName() );
         assertEquals( "dn1(BDD)", wr.getReportSourceName( "BDD" ) );
+        assertEquals( "surefire.testcase.JunitParamsTest(BDD)", wr.getSourceName( "BDD" ) );
         assertEquals( "dn2", wr.getReportName() );
         assertFalse(wr.isSucceeded());
         assertTrue(wr.isErrorOrFailure());

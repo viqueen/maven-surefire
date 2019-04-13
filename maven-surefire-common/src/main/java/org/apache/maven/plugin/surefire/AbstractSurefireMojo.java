@@ -674,9 +674,10 @@ public abstract class AbstractSurefireMojo
 
     /**
      * Flag to disable the generation of report files in xml format.
-     *
+     * Deprecated since 3.0.0-M4. Use this parameter within {@code statelessReporter}.
      * @since 2.2
      */
+    @Deprecated
     @Parameter( property = "disableXmlReport", defaultValue = "false" )
     private boolean disableXmlReport;
 
@@ -1785,7 +1786,8 @@ public abstract class AbstractSurefireMojo
         getConsoleLogger().debug( testClasspath.getCompactLogMessage( "test(compact) classpath:" ) );
         getConsoleLogger().debug( providerClasspath.getCompactLogMessage( "provider(compact) classpath:" ) );
 
-        Artifact[] additionalInProcArtifacts = { getCommonArtifact(), getApiArtifact(), getLoggerApiArtifact() };
+        Artifact[] additionalInProcArtifacts =
+                { getCommonArtifact(), getExtensionsArtifact(), getApiArtifact(), getLoggerApiArtifact() };
         Set<Artifact> inProcArtifacts = retainInProcArtifactsUnique( providerArtifacts, additionalInProcArtifacts );
         Classpath inProcClasspath = createInProcClasspath( providerClasspath, inProcArtifacts );
         getConsoleLogger().debug( inProcClasspath.getLogMessage( "in-process classpath:" ) );
@@ -1885,7 +1887,8 @@ public abstract class AbstractSurefireMojo
         ModularClasspath modularClasspath = new ModularClasspath( moduleDescriptor, testModulepath.getClassPath(),
                 packages, getTestClassesDirectory() );
 
-        Artifact[] additionalInProcArtifacts = { getCommonArtifact(), getApiArtifact(), getLoggerApiArtifact() };
+        Artifact[] additionalInProcArtifacts =
+                { getCommonArtifact(), getExtensionsArtifact(), getApiArtifact(), getLoggerApiArtifact() };
         Set<Artifact> inProcArtifacts = retainInProcArtifactsUnique( providerArtifacts, additionalInProcArtifacts );
         Classpath inProcClasspath = createInProcClasspath( providerClasspath, inProcArtifacts );
 
@@ -1908,6 +1911,11 @@ public abstract class AbstractSurefireMojo
     private Artifact getCommonArtifact()
     {
         return getPluginArtifactMap().get( "org.apache.maven.surefire:maven-surefire-common" );
+    }
+
+    private Artifact getExtensionsArtifact()
+    {
+        return getPluginArtifactMap().get( "org.apache.maven.surefire:surefire-extensions-api" );
     }
 
     private Artifact getApiArtifact()
@@ -3163,7 +3171,7 @@ public abstract class AbstractSurefireMojo
         public Set<Artifact> getProviderClasspath()
         {
             return surefireDependencyResolver.addProviderToClasspath( getPluginArtifactMap(), getMojoArtifact(),
-                    getCommonArtifact(), getApiArtifact(), getLoggerApiArtifact() );
+                    getApiArtifact(), getLoggerApiArtifact() );
         }
     }
 

@@ -39,6 +39,7 @@ import static org.apache.maven.plugin.surefire.SurefireHelper.replaceForkThreads
 import static org.apache.maven.plugin.surefire.report.ConsoleReporter.BRIEF;
 import static org.apache.maven.plugin.surefire.report.ConsoleReporter.PLAIN;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
+import static org.apache.maven.surefire.extensions.SourceNameType.DEFAULT;
 
 /**
  * All the parameters used to construct reporters
@@ -151,7 +152,6 @@ public final class StartupReportConfiguration
         return rerunFailingTestsCount;
     }
 
-    @Deprecated // rename to stateful
     public StatelessXmlReporter instantiateStatelessXmlReporter( Integer forkNumber )
     {
         assert forkNumber == null || isForkMode;
@@ -168,7 +168,7 @@ public final class StartupReportConfiguration
         return isDisableXmlReport()
             ? null
             : new StatelessXmlReporter( resolveReportsDirectory( forkNumber ), reportNameSuffix, trimStackTrace,
-                rerunFailingTestsCount, testClassMethodRunHistory, xsdSchemaLocation );
+                rerunFailingTestsCount, testClassMethodRunHistory, xsdSchemaLocation, DEFAULT, DEFAULT, DEFAULT );
     }
 
     public FileReporter instantiateFileReporter( Integer forkNumber )

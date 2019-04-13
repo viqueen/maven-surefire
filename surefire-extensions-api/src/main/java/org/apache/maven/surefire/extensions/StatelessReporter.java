@@ -26,10 +26,10 @@ import java.util.EventObject;
  *
  * @author <a href="mailto:tibordigana@apache.org">Tibor Digana (tibor17)</a>
  * @since 3.0.0-M4
- * @param <T> Generic type of event type
+ * @param <E> Generic type of event type
  * @param <C> mojo config
  */
-public abstract class StatelessReporter<T extends EventObject, C extends StatelessReportMojoConfiguration>
+public abstract class StatelessReporter<E extends EventObject, C extends StatelessReportMojoConfiguration>
 {
     private boolean disableXmlReport;
     private SourceNameType useFileName;
@@ -41,7 +41,9 @@ public abstract class StatelessReporter<T extends EventObject, C extends Statele
      *
      * @return reporter object
      */
-    public abstract StatelessReportEventListener<T> createStatelessReportEventListener( C configuration );
+    public abstract StatelessReportEventListener<E> createStatelessReportEventListener( C configuration );
+
+    public abstract Object clone( ClassLoader target );
 
     public boolean isDisableXmlReport()
     {

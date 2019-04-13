@@ -28,7 +28,7 @@ package org.apache.maven.surefire.extensions;
 public enum SourceNameType
 {
     /**
-     * Fully qualified Java class or name.
+     * Fully qualified Java class or method name.
      */
     DEFAULT,
 

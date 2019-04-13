@@ -20,8 +20,12 @@ package org.apache.maven.plugin.surefire.extensions;
  */
 
 import org.apache.maven.plugin.surefire.report.StatelessXmlReporter;
+import org.apache.maven.surefire.extensions.SourceNameType;
 import org.apache.maven.surefire.extensions.StatelessReportEventListener;
 import org.apache.maven.surefire.extensions.StatelessReporter;
+
+import static org.apache.maven.surefire.extensions.SourceNameType.DEFAULT;
+import static org.apache.maven.surefire.extensions.SourceNameType.PHRASED;
 
 /**
  * Default implementation for extension of {@link StatelessXmlReporter} in plugin.
@@ -37,8 +41,58 @@ public class DefaultStatelessReporter
     public StatelessReportEventListener<StatelessReporterEvent> createStatelessReportEventListener(
             DefaultStatelessReportMojoConfiguration configuration )
     {
-        return new StatelessXmlReporter( configuration.getReportsDirectory(), configuration.getReportNameSuffix(),
-                configuration.isTrimStackTrace(), configuration.getRerunFailingTestsCount(),
-                configuration.getTestClassMethodRunHistory(), configuration.getXsdSchemaLocation() );
+        return new StatelessXmlReporter( configuration.getReportsDirectory(),
+                configuration.getReportNameSuffix(),
+                configuration.isTrimStackTrace(),
+                configuration.getRerunFailingTestsCount(),
+                configuration.getTestClassMethodRunHistory(),
+                configuration.getXsdSchemaLocation(),
+                getUseFileName(),
+                getUseTestCaseClassName(),
+                getUseTestCaseMethodName() );
+    }
+
+    @Override
+    public Object clone( ClassLoader target )
+    {
+        try
+        {
+            Class<?> cls = target.loadClass( getClass().getName() );
+            Object clone = cls.newInstance();
+
+            cls.getMethod( "setDisableXmlReport", boolean.class )
+                    .invoke( clone, isDisableXmlReport() );
+
+            Class<?> enumCls = target.loadClass( SourceNameType.class.getName() );
+            Object[] enums = enumCls.getEnumConstants();
+            assert enums.length == 2 : "'SourceNameType' should have two enum constants {DEFAULT, PHRASED}.";
+            Enum<?> defaultSourceName = findEnumByName( enums, DEFAULT.name() );
+            Enum<?> phrasedSourceName = findEnumByName( enums, PHRASED.name() );
+            cls.getMethod( "setUseFileName", enumCls )
+                    .invoke( clone, getUseFileName() == DEFAULT ? defaultSourceName : phrasedSourceName );
+            cls.getMethod( "setUseTestCaseClassName", enumCls )
+                    .invoke( clone, getUseTestCaseClassName() == DEFAULT ? defaultSourceName : phrasedSourceName );
+            cls.getMethod( "setUseTestCaseMethodName", enumCls )
+                    .invoke( clone, getUseTestCaseMethodName() == DEFAULT ? defaultSourceName : phrasedSourceName );
+
+            return clone;
+        }
+        catch ( ReflectiveOperationException e )
+        {
+            throw new IllegalStateException( e.getLocalizedMessage() );
+        }
+    }
+
+    private static Enum<?> findEnumByName( Object[] enums, String name )
+    {
+        for ( Object e : enums )
+        {
+            Enum<?> foundEnum = (Enum<?>) e;
+            if ( name.equals( foundEnum.name() ) )
+            {
+                return foundEnum;
+            }
+        }
+        throw new IllegalStateException( "Could not find enum " + name );
     }
 }
