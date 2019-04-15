@@ -72,19 +72,4 @@ public class StatelessReportMojoConfiguration
     {
         return xsdSchemaLocation;
     }
-
-    public Object clone( ClassLoader target )
-    {
-        try
-        {
-            Class<?> cls = target.loadClass( getClass().getName() );
-            return cls.getConstructor( File.class, String.class, boolean.class, int.class, String.class )
-                    .newInstance( getReportsDirectory(), getReportNameSuffix(), isTrimStackTrace(),
-                            getRerunFailingTestsCount(), getXsdSchemaLocation() );
-        }
-        catch ( ReflectiveOperationException e )
-        {
-            throw new IllegalStateException( e.getLocalizedMessage() );
-        }
-    }
 }

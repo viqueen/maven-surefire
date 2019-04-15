@@ -68,7 +68,7 @@ public class DefaultReporterFactoryTest
         MessageUtils.setColorEnabled( false );
         File reportsDirectory = new File("target");
         StartupReportConfiguration reportConfig =
-                new StartupReportConfiguration( true, true, "PLAIN", false, false, reportsDirectory, false, null,
+                new StartupReportConfiguration( true, true, "PLAIN", false, reportsDirectory, false, null,
                         new File( reportsDirectory, "TESTHASH" ), false, 1, null, null, false,
                         new DefaultStatelessReporter() );
 

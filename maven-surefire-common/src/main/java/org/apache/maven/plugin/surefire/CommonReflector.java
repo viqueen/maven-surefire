@@ -72,14 +72,14 @@ public class CommonReflector
     private Object createStartupReportConfiguration( @Nonnull StartupReportConfiguration reporterConfiguration )
     {
         Constructor<?> constructor = getConstructor( startupReportConfiguration, boolean.class, boolean.class,
-                                                           String.class, boolean.class, boolean.class, File.class,
+                                                           String.class, boolean.class, File.class,
                                                            boolean.class, String.class, File.class, boolean.class,
                                                            int.class, String.class, String.class, boolean.class,
                                                            statelessReporter );
         //noinspection BooleanConstructorCall
         Object[] params = { reporterConfiguration.isUseFile(), reporterConfiguration.isPrintSummary(),
             reporterConfiguration.getReportFormat(), reporterConfiguration.isRedirectTestOutputToFile(),
-            reporterConfiguration.isDisableXmlReport(), reporterConfiguration.getReportsDirectory(),
+            reporterConfiguration.getReportsDirectory(),
             reporterConfiguration.isTrimStackTrace(), reporterConfiguration.getReportNameSuffix(),
             reporterConfiguration.getStatisticsFile(), reporterConfiguration.isRequiresRunHistory(),
             reporterConfiguration.getRerunFailingTestsCount(), reporterConfiguration.getXsdSchemaLocation(),

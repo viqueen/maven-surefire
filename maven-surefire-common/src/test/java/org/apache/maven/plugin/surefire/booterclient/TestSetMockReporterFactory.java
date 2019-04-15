@@ -56,7 +56,7 @@ public class TestSetMockReporterFactory
     {
         File target = new File( "./target" );
         File statisticsFile = new File( target, "TESTHASH" );
-        return new StartupReportConfiguration( true, true, "PLAIN", false, false, target, false, null, statisticsFile,
+        return new StartupReportConfiguration( true, true, "PLAIN", false, target, false, null, statisticsFile,
                 false, 0, null, null, true, new DefaultStatelessReporter() );
     }
 }

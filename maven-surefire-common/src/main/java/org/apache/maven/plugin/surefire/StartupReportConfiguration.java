@@ -38,6 +38,7 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.apache.maven.plugin.surefire.SurefireHelper.replaceForkThreadsInPath;
 import static org.apache.maven.plugin.surefire.report.ConsoleReporter.BRIEF;
@@ -69,8 +70,6 @@ public final class StartupReportConfiguration
 
     private final boolean redirectTestOutputToFile;
 
-    private final boolean disableXmlReport;
-
     private final File reportsDirectory;
 
     private final boolean trimStackTrace;
@@ -91,7 +90,7 @@ public final class StartupReportConfiguration
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     public StartupReportConfiguration( boolean useFile, boolean printSummary, String reportFormat,
-                   boolean redirectTestOutputToFile, boolean disableXmlReport,
+                   boolean redirectTestOutputToFile,
                    @Nonnull File reportsDirectory, boolean trimStackTrace, String reportNameSuffix,
                    File statisticsFile, boolean requiresRunHistory, int rerunFailingTestsCount,
                    String xsdSchemaLocation, String encoding, boolean isForkMode,
@@ -101,7 +100,6 @@ public final class StartupReportConfiguration
         this.printSummary = printSummary;
         this.reportFormat = reportFormat;
         this.redirectTestOutputToFile = redirectTestOutputToFile;
-        this.disableXmlReport = disableXmlReport;
         this.reportsDirectory = reportsDirectory;
         this.trimStackTrace = trimStackTrace;
         this.reportNameSuffix = reportNameSuffix;
@@ -112,7 +110,7 @@ public final class StartupReportConfiguration
         this.rerunFailingTestsCount = rerunFailingTestsCount;
         this.xsdSchemaLocation = xsdSchemaLocation;
         String charset = trimToNull( encoding );
-        this.encoding = charset == null ? Charset.defaultCharset() : Charset.forName( charset );
+        this.encoding = charset == null ? UTF_8 : Charset.forName( charset );
         this.isForkMode = isForkMode;
         this.xmlReporter = xmlReporter;
     }
@@ -144,7 +142,7 @@ public final class StartupReportConfiguration
 
     public boolean isDisableXmlReport()
     {
-        return disableXmlReport;
+        return xmlReporter.isDisable();
     }
 
     public File getReportsDirectory()

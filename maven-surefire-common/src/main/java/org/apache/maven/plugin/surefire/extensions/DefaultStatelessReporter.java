@@ -32,6 +32,25 @@ import org.apache.maven.surefire.extensions.StatelessReporter;
 public class DefaultStatelessReporter
         extends StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration>
 {
+    /**
+     * Activated in the injection point of MOJO.
+     */
+    public DefaultStatelessReporter()
+    {
+        this( false, "3.0" );
+    }
+
+    /**
+     * Activated if null injection point in MOJO.
+     * @param disable             {@code true} to disable performing the report
+     * @param version             (xsd 3.0) version of the schema
+     */
+    public DefaultStatelessReporter( boolean disable, String version )
+    {
+        setDisable( disable );
+        setVersion( version );
+    }
+
     @Override
     public StatelessReportEventListener<StatelessReporterEvent> createStatelessReportEventListener(
             DefaultStatelessReportMojoConfiguration configuration )

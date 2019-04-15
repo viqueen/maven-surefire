@@ -160,6 +160,9 @@ public abstract class AbstractSurefireMojo
 
     private final ProviderDetector providerDetector = new ProviderDetector();
 
+    /**
+     * Note: use the legacy system property <em>disableXmlReport</em> set to {@code true} to disable the report.
+     */
     @Parameter
     private StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration> statelessReporter;
 
@@ -677,10 +680,10 @@ public abstract class AbstractSurefireMojo
 
     /**
      * Flag to disable the generation of report files in xml format.
-     * Deprecated since 3.0.0-M4. Use this parameter within {@code statelessReporter}.
+     * Deprecated since 3.0.0-M4. Instead use <em>disable</em> within {@code statelessReporter} since of 3.0.0-M6.
      * @since 2.2
      */
-    @Deprecated
+    @Deprecated // todo make readonly to handle system property
     @Parameter( property = "disableXmlReport", defaultValue = "false" )
     private boolean disableXmlReport;
 
@@ -1944,10 +1947,14 @@ public abstract class AbstractSurefireMojo
     private StartupReportConfiguration getStartupReportConfiguration( String configChecksum, boolean isForkMode )
     {
         StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration> xmlReporter =
-                statelessReporter == null ? new DefaultStatelessReporter() : statelessReporter;
+                statelessReporter == null
+                        ? new DefaultStatelessReporter( /*todo call def. constr.*/ isDisableXmlReport(), "3.0" )
+                        : statelessReporter;
+
+        xmlReporter.setDisable( isDisableXmlReport() ); // todo change to Boolean in the version 3.0.0-M6
 
         return new StartupReportConfiguration( isUseFile(), isPrintSummary(), getReportFormat(),
-                                               isRedirectTestOutputToFile(), isDisableXmlReport(),
+                                               isRedirectTestOutputToFile(),
                                                getReportsDirectory(), isTrimStackTrace(), getReportNameSuffix(),
                                                getStatisticsFile( configChecksum ), requiresRunHistory(),
                                                getRerunFailingTestsCount(), getReportSchemaLocation(), getEncoding(),
