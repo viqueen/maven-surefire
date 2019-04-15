@@ -23,6 +23,7 @@ import java.util.EventObject;
 
 /**
  * Extension for stateless reporter.
+ * Signatures can be changed between major or minor versions.
  *
  * @author <a href="mailto:tibordigana@apache.org">Tibor Digana (tibor17)</a>
  * @since 3.0.0-M4
@@ -31,10 +32,15 @@ import java.util.EventObject;
  */
 public abstract class StatelessReporter<E extends EventObject, C extends StatelessReportMojoConfiguration>
 {
-    private boolean disableXmlReport;
-    private SourceNameType useFileName;
-    private SourceNameType useTestCaseClassName;
-    private SourceNameType useTestCaseMethodName;
+    /**
+     * {@code false} by default
+     */
+    private boolean disable;
+
+    /**
+     * Version of reporter. It is version <em>3.0</em> used by default in XML reporter.
+     */
+    private String version = "3.0";
 
     /**
      * Creates reporter.
@@ -45,54 +51,32 @@ public abstract class StatelessReporter<E extends EventObject, C extends Statele
 
     public abstract Object clone( ClassLoader target );
 
-    public boolean isDisableXmlReport()
+    public boolean isDisable()
     {
-        return disableXmlReport;
+        return disable;
     }
 
-    public void setDisableXmlReport( boolean disableXmlReport )
+    public void setDisable( boolean disable )
     {
-        this.disableXmlReport = disableXmlReport;
+        this.disable = disable;
     }
 
-    public SourceNameType getUseFileName()
+    public String getVersion()
     {
-        return useFileName;
+        return version;
     }
 
-    public void setUseFileName( SourceNameType useFileName )
+    public void setVersion( String version )
     {
-        this.useFileName = useFileName;
-    }
-
-    public SourceNameType getUseTestCaseClassName()
-    {
-        return useTestCaseClassName;
-    }
-
-    public void setUseTestCaseClassName( SourceNameType useTestCaseClassName )
-    {
-        this.useTestCaseClassName = useTestCaseClassName;
-    }
-
-    public SourceNameType getUseTestCaseMethodName()
-    {
-        return useTestCaseMethodName;
-    }
-
-    public void setUseTestCaseMethodName( SourceNameType useTestCaseMethodName )
-    {
-        this.useTestCaseMethodName = useTestCaseMethodName;
+        this.version = version;
     }
 
     @Override
     public String toString()
     {
         return "StatelessReporter{"
-                + "disableXmlReport=" + disableXmlReport
-                + ", useFileName=" + useFileName
-                + ", useTestCaseClassName=" + useTestCaseClassName
-                + ", useTestCaseMethodName=" + useTestCaseMethodName
+                + "version=" + version
+                + ", disable=" + disable
                 + '}';
     }
 }

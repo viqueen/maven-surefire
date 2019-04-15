@@ -25,7 +25,9 @@ import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.plugin.surefire.extensions.DefaultStatelessReportMojoConfiguration;
 import org.apache.maven.plugin.surefire.extensions.DefaultStatelessReporter;
+import org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
@@ -70,6 +72,7 @@ import org.apache.maven.surefire.booter.StartupConfiguration;
 import org.apache.maven.surefire.booter.SurefireBooterForkException;
 import org.apache.maven.surefire.booter.SurefireExecutionException;
 import org.apache.maven.surefire.cli.CommandLineOption;
+import org.apache.maven.surefire.extensions.StatelessReporter;
 import org.apache.maven.surefire.providerapi.SurefireProvider;
 import org.apache.maven.surefire.report.ReporterConfiguration;
 import org.apache.maven.surefire.suite.RunResult;
@@ -158,7 +161,7 @@ public abstract class AbstractSurefireMojo
     private final ProviderDetector providerDetector = new ProviderDetector();
 
     @Parameter
-    private DefaultStatelessReporter statelessReporter;
+    private StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration> statelessReporter;
 
     /**
      * Information about this plugin, mainly used to lookup this plugin's configuration from the currently executing
@@ -1940,12 +1943,15 @@ public abstract class AbstractSurefireMojo
 
     private StartupReportConfiguration getStartupReportConfiguration( String configChecksum, boolean isForkMode )
     {
+        StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration> xmlReporter =
+                statelessReporter == null ? new DefaultStatelessReporter() : statelessReporter;
+
         return new StartupReportConfiguration( isUseFile(), isPrintSummary(), getReportFormat(),
                                                isRedirectTestOutputToFile(), isDisableXmlReport(),
                                                getReportsDirectory(), isTrimStackTrace(), getReportNameSuffix(),
                                                getStatisticsFile( configChecksum ), requiresRunHistory(),
                                                getRerunFailingTestsCount(), getReportSchemaLocation(), getEncoding(),
-                                               isForkMode );
+                                               isForkMode, xmlReporter );
     }
 
     private boolean isSpecificTestSpecified()

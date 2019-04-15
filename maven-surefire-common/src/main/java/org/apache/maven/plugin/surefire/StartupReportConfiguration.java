@@ -19,13 +19,16 @@ package org.apache.maven.plugin.surefire;
  * under the License.
  */
 
+import org.apache.maven.plugin.surefire.extensions.DefaultStatelessReportMojoConfiguration;
+import org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent;
 import org.apache.maven.plugin.surefire.report.ConsoleOutputFileReporter;
 import org.apache.maven.plugin.surefire.report.DirectConsoleOutput;
 import org.apache.maven.plugin.surefire.report.FileReporter;
-import org.apache.maven.plugin.surefire.report.StatelessXmlReporter;
 import org.apache.maven.plugin.surefire.report.TestcycleConsoleOutputReceiver;
 import org.apache.maven.plugin.surefire.report.WrappedReportEntry;
 import org.apache.maven.plugin.surefire.runorder.StatisticsReporter;
+import org.apache.maven.surefire.extensions.StatelessReportEventListener;
+import org.apache.maven.surefire.extensions.StatelessReporter;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -35,11 +38,10 @@ import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.apache.commons.lang3.StringUtils.trimToNull;
 import static org.apache.maven.plugin.surefire.SurefireHelper.replaceForkThreadsInPath;
 import static org.apache.maven.plugin.surefire.report.ConsoleReporter.BRIEF;
 import static org.apache.maven.plugin.surefire.report.ConsoleReporter.PLAIN;
-import static org.apache.commons.lang3.StringUtils.trimToNull;
-import static org.apache.maven.surefire.extensions.SourceNameType.DEFAULT;
 
 /**
  * All the parameters used to construct reporters
@@ -77,21 +79,23 @@ public final class StartupReportConfiguration
 
     private final String xsdSchemaLocation;
 
-    private final Map<String, Deque<WrappedReportEntry>> testClassMethodRunHistory
-        = new ConcurrentHashMap<>();
+    private final Map<String, Deque<WrappedReportEntry>> testClassMethodRunHistory = new ConcurrentHashMap<>();
 
     private final Charset encoding;
 
-    private boolean isForkMode;
+    private final boolean isForkMode;
+
+    private final StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration> xmlReporter;
 
     private StatisticsReporter statisticsReporter;
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     public StartupReportConfiguration( boolean useFile, boolean printSummary, String reportFormat,
-                                       boolean redirectTestOutputToFile, boolean disableXmlReport,
-                                       @Nonnull File reportsDirectory, boolean trimStackTrace, String reportNameSuffix,
-                                       File statisticsFile, boolean requiresRunHistory, int rerunFailingTestsCount,
-                                       String xsdSchemaLocation, String encoding, boolean isForkMode )
+                   boolean redirectTestOutputToFile, boolean disableXmlReport,
+                   @Nonnull File reportsDirectory, boolean trimStackTrace, String reportNameSuffix,
+                   File statisticsFile, boolean requiresRunHistory, int rerunFailingTestsCount,
+                   String xsdSchemaLocation, String encoding, boolean isForkMode,
+                   StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration> xmlReporter )
     {
         this.useFile = useFile;
         this.printSummary = printSummary;
@@ -110,6 +114,7 @@ public final class StartupReportConfiguration
         String charset = trimToNull( encoding );
         this.encoding = charset == null ? Charset.defaultCharset() : Charset.forName( charset );
         this.isForkMode = isForkMode;
+        this.xmlReporter = xmlReporter;
     }
 
     public boolean isUseFile()
@@ -152,9 +157,9 @@ public final class StartupReportConfiguration
         return rerunFailingTestsCount;
     }
 
-    public StatelessXmlReporter instantiateStatelessXmlReporter( Integer forkNumber )
+    public StatelessReportEventListener<StatelessReporterEvent> instantiateStatelessXmlReporter( Integer forkNumber )
     {
-        assert forkNumber == null || isForkMode;
+        assert ( forkNumber == null ) == !isForkMode;
 
         // If forking TestNG the suites have same name 'TestSuite' and tend to override report statistics in stateful
         // reporter, see Surefire1535TestNGParallelSuitesIT. The testClassMethodRunHistory should be isolated.
@@ -165,10 +170,11 @@ public final class StartupReportConfiguration
                 ? new ConcurrentHashMap<String, Deque<WrappedReportEntry>>()
                 : this.testClassMethodRunHistory;
 
-        return isDisableXmlReport()
-            ? null
-            : new StatelessXmlReporter( resolveReportsDirectory( forkNumber ), reportNameSuffix, trimStackTrace,
-                rerunFailingTestsCount, testClassMethodRunHistory, xsdSchemaLocation, DEFAULT, DEFAULT, DEFAULT );
+        DefaultStatelessReportMojoConfiguration xmlReporterConfig =
+                new DefaultStatelessReportMojoConfiguration( resolveReportsDirectory( forkNumber ), reportNameSuffix,
+                        trimStackTrace, rerunFailingTestsCount, xsdSchemaLocation, testClassMethodRunHistory );
+
+        return isDisableXmlReport() ? null : xmlReporter.createStatelessReportEventListener( xmlReporterConfig );
     }
 
     public FileReporter instantiateFileReporter( Integer forkNumber )
@@ -238,5 +244,10 @@ public final class StartupReportConfiguration
     private File resolveReportsDirectory( Integer forkNumber )
     {
         return forkNumber == null ? reportsDirectory : replaceForkThreadsInPath( reportsDirectory, forkNumber );
+    }
+
+    public StatelessReporter<StatelessReporterEvent, DefaultStatelessReportMojoConfiguration> getXmlReporter()
+    {
+        return xmlReporter;
     }
 }

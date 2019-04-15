@@ -20,10 +20,12 @@ package org.apache.maven.plugin.surefire.report;
  */
 
 import org.apache.maven.plugin.surefire.StartupReportConfiguration;
+import org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent;
 import org.apache.maven.plugin.surefire.log.api.ConsoleLogger;
 import org.apache.maven.plugin.surefire.log.api.Level;
 import org.apache.maven.plugin.surefire.runorder.StatisticsReporter;
 import org.apache.maven.shared.utils.logging.MessageBuilder;
+import org.apache.maven.surefire.extensions.StatelessReportEventListener;
 import org.apache.maven.surefire.report.ReporterFactory;
 import org.apache.maven.surefire.report.RunListener;
 import org.apache.maven.surefire.report.RunStatistics;
@@ -124,9 +126,10 @@ public class DefaultReporterFactory
         return useNonNull( fileReporter, NullFileReporter.INSTANCE );
     }
 
-    private StatelessXmlReporter createSimpleXMLReporter()
+    private StatelessReportEventListener<StatelessReporterEvent> createSimpleXMLReporter()
     {
-        StatelessXmlReporter xmlReporter = reportConfiguration.instantiateStatelessXmlReporter( forkNumber );
+        StatelessReportEventListener<StatelessReporterEvent> xmlReporter =
+                reportConfiguration.instantiateStatelessXmlReporter( forkNumber );
         return useNonNull( xmlReporter, NullStatelessXmlReporter.INSTANCE );
     }
 
@@ -382,7 +385,6 @@ public class DefaultReporterFactory
 
         for ( Map.Entry<String, List<TestMethodStats>> entry : testStats.entrySet() )
         {
-            printed = true;
             List<TestMethodStats> testMethodStats = entry.getValue();
             if ( testMethodStats.size() == 1 )
             {

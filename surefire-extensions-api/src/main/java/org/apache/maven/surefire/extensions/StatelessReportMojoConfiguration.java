@@ -24,6 +24,7 @@ import java.io.File;
 /**
  * Configuration passed to the constructor of default reporter
  * <em>org.apache.maven.plugin.surefire.report.StatelessXmlReporter</em>.
+ * Signatures can be changed between major or minor versions.
  */
 public class StatelessReportMojoConfiguration
 {
@@ -70,5 +71,20 @@ public class StatelessReportMojoConfiguration
     public String getXsdSchemaLocation()
     {
         return xsdSchemaLocation;
+    }
+
+    public Object clone( ClassLoader target )
+    {
+        try
+        {
+            Class<?> cls = target.loadClass( getClass().getName() );
+            return cls.getConstructor( File.class, String.class, boolean.class, int.class, String.class )
+                    .newInstance( getReportsDirectory(), getReportNameSuffix(), isTrimStackTrace(),
+                            getRerunFailingTestsCount(), getXsdSchemaLocation() );
+        }
+        catch ( ReflectiveOperationException e )
+        {
+            throw new IllegalStateException( e.getLocalizedMessage() );
+        }
     }
 }

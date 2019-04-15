@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.maven.plugin.surefire.extensions.StatelessReporterEvent;
 import org.apache.maven.plugin.surefire.log.api.ConsoleLogger;
 import org.apache.maven.plugin.surefire.runorder.StatisticsReporter;
+import org.apache.maven.surefire.extensions.StatelessReportEventListener;
 import org.apache.maven.surefire.report.ConsoleOutputReceiver;
 import org.apache.maven.surefire.report.ReportEntry;
 import org.apache.maven.surefire.report.RunListener;
@@ -57,7 +59,7 @@ public class TestSetRunListener
 
     private final boolean briefOrPlainFormat;
 
-    private final StatelessXmlReporter simpleXMLReporter;
+    private final StatelessReportEventListener<StatelessReporterEvent> simpleXMLReporter;
 
     private final ConsoleReporter consoleReporter;
 
@@ -73,7 +75,7 @@ public class TestSetRunListener
 
     @SuppressWarnings( "checkstyle:parameternumber" )
     public TestSetRunListener( ConsoleReporter consoleReporter, FileReporter fileReporter,
-                               StatelessXmlReporter simpleXMLReporter,
+                               StatelessReportEventListener<StatelessReporterEvent> simpleXMLReporter,
                                TestcycleConsoleOutputReceiver consoleOutputReceiver,
                                StatisticsReporter statisticsReporter, boolean trimStackTrace,
                                boolean isPlainFormat, boolean briefOrPlainFormat )
@@ -183,7 +185,7 @@ public class TestSetRunListener
         final List<String> testResults =
                 briefOrPlainFormat ? detailsForThis.getTestResults() : Collections.<String>emptyList();
         fileReporter.testSetCompleted( wrap, detailsForThis, testResults );
-        simpleXMLReporter.testSetCompleted( wrap, detailsForThis );
+        simpleXMLReporter.testSetCompleted( new StatelessReporterEvent( this, wrap, detailsForThis ) );
         statisticsReporter.testSetCompleted();
         consoleReporter.testSetCompleted( wrap, detailsForThis, testResults );
         consoleOutputReceiver.testSetCompleted( wrap );

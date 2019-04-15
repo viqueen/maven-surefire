@@ -38,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.maven.surefire.extensions.SourceNameType.DEFAULT;
 import static org.apache.maven.surefire.util.internal.ObjectUtils.systemProps;
 
 @SuppressWarnings( "ResultOfMethodCallIgnored" )
@@ -85,7 +84,8 @@ public class StatelessXmlReporterTest
     {
         StatelessXmlReporter reporter =
                 new StatelessXmlReporter( reportDir, null, false, 0,
-                        new ConcurrentHashMap<String, Deque<WrappedReportEntry>>(), XSD, DEFAULT, DEFAULT, DEFAULT );
+                        new ConcurrentHashMap<String, Deque<WrappedReportEntry>>(), XSD, "3.0",
+                        false, false, false, false );
         reporter.cleanTestHistoryMap();
 
         ReportEntry reportEntry = new SimpleReportEntry( getClass().getName(), null, getClass().getName(), null, 12 );
@@ -135,7 +135,7 @@ public class StatelessXmlReporterTest
 
         stats.testSucceeded( t2 );
         StatelessXmlReporter reporter = new StatelessXmlReporter( reportDir, null, false, 0,
-                new ConcurrentHashMap<String, Deque<WrappedReportEntry>>(), XSD, DEFAULT, DEFAULT, DEFAULT );
+                new ConcurrentHashMap<String, Deque<WrappedReportEntry>>(), XSD, "3.0", false, false, false, false );
         reporter.testSetCompleted( testSetReportEntry, stats );
 
         FileInputStream fileInputStream = new FileInputStream( expectedReportFile );
@@ -214,7 +214,7 @@ public class StatelessXmlReporterTest
 
         StatelessXmlReporter reporter =
                 new StatelessXmlReporter( reportDir, null, false, 1,
-                        new HashMap<String, Deque<WrappedReportEntry>>(), XSD, DEFAULT, DEFAULT, DEFAULT );
+                        new HashMap<String, Deque<WrappedReportEntry>>(), XSD, "3.0", false, false, false, false );
 
         reporter.testSetCompleted( testSetReportEntry, stats );
         reporter.testSetCompleted( testSetReportEntry, rerunStats );

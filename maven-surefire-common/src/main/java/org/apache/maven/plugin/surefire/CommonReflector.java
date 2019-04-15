@@ -19,15 +19,15 @@ package org.apache.maven.plugin.surefire;
  * under the License.
  */
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-
 import org.apache.maven.plugin.surefire.log.api.ConsoleLogger;
 import org.apache.maven.plugin.surefire.report.DefaultReporterFactory;
 import org.apache.maven.surefire.booter.SurefireReflector;
+import org.apache.maven.surefire.extensions.StatelessReporter;
 import org.apache.maven.surefire.util.SurefireReflectionException;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.lang.reflect.Constructor;
 
 import static org.apache.maven.surefire.util.ReflectionUtils.getConstructor;
 import static org.apache.maven.surefire.util.ReflectionUtils.instantiateObject;
@@ -40,6 +40,7 @@ public class CommonReflector
 {
     private final Class<?> startupReportConfiguration;
     private final Class<?> consoleLogger;
+    private final Class<?> statelessReporter;
     private final ClassLoader surefireClassLoader;
 
     public CommonReflector( @Nonnull ClassLoader surefireClassLoader )
@@ -50,6 +51,7 @@ public class CommonReflector
         {
             startupReportConfiguration = surefireClassLoader.loadClass( StartupReportConfiguration.class.getName() );
             consoleLogger = surefireClassLoader.loadClass( ConsoleLogger.class.getName() );
+            statelessReporter = surefireClassLoader.loadClass( StatelessReporter.class.getName() );
         }
         catch ( ClassNotFoundException e )
         {
@@ -72,7 +74,8 @@ public class CommonReflector
         Constructor<?> constructor = getConstructor( startupReportConfiguration, boolean.class, boolean.class,
                                                            String.class, boolean.class, boolean.class, File.class,
                                                            boolean.class, String.class, File.class, boolean.class,
-                                                           int.class, String.class, String.class, boolean.class );
+                                                           int.class, String.class, String.class, boolean.class,
+                                                           statelessReporter );
         //noinspection BooleanConstructorCall
         Object[] params = { reporterConfiguration.isUseFile(), reporterConfiguration.isPrintSummary(),
             reporterConfiguration.getReportFormat(), reporterConfiguration.isRedirectTestOutputToFile(),
@@ -80,7 +83,8 @@ public class CommonReflector
             reporterConfiguration.isTrimStackTrace(), reporterConfiguration.getReportNameSuffix(),
             reporterConfiguration.getStatisticsFile(), reporterConfiguration.isRequiresRunHistory(),
             reporterConfiguration.getRerunFailingTestsCount(), reporterConfiguration.getXsdSchemaLocation(),
-            reporterConfiguration.getEncoding().name(), reporterConfiguration.isForkMode() };
+            reporterConfiguration.getEncoding().name(), reporterConfiguration.isForkMode(),
+            reporterConfiguration.getXmlReporter().clone( surefireClassLoader ) };
         return newInstance( constructor, params );
     }
 
