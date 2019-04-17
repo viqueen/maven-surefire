@@ -29,6 +29,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.apache.maven.shared.utils.logging.MessageUtils.buffer;
+import static org.apache.maven.surefire.report.CategorizedReportEntry.GROUP_PREFIX;
 
 /**
  * Maintains per-thread test result state. Not thread safe.
@@ -296,7 +297,8 @@ public class TestSetStats
     static String concatenateWithTestGroup( MessageBuilder builder, ReportEntry report )
     {
         final String testClass = report.getNameWithGroup();
-        int delimiter = testClass.lastIndexOf( '.' );
+        int indexOfGroup = testClass.indexOf( GROUP_PREFIX );
+        int delimiter = testClass.lastIndexOf( '.', indexOfGroup == -1 ? testClass.length() : indexOfGroup );
         String pkg = testClass.substring( 0, 1 + delimiter );
         String cls = testClass.substring( 1 + delimiter );
         return builder.a( pkg )
