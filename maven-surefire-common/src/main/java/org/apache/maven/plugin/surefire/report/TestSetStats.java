@@ -269,7 +269,7 @@ public class TestSetStats
             }
             else if ( plainFormat && testResult.isSkipped() )
             {
-                result.add( testResult.getName() + " skipped" );
+                result.add( testResult.getSourceName() + " skipped" );
             }
             else if ( plainFormat && testResult.isSucceeded() )
             {
